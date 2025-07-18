@@ -8,6 +8,12 @@ COPY requirements.txt .
 
 RUN apt-get update && apt-get install -y gcc libpq-dev && rm -rf /var/lib/apt/lists/*
 
+RUN apt-get update && apt-get install -y \
+    gcc \
+    libpq-dev \
+    netcat-openbsd \
+ && rm -rf /var/lib/apt/lists/*
+
 RUN pip install -r requirements.txt
 
 COPY entrypoint.sh /entrypoint.sh

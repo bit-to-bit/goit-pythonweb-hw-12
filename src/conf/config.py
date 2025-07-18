@@ -24,6 +24,9 @@ class Settings(BaseSettings):
     MAIL_SSL_TLS: bool = True
     USE_CREDENTIALS: bool = True
     VALIDATE_CERTS: bool = True
+    REDIS_DOMAIN: str = "localhost"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
     model_config = ConfigDict(
         extra="ignore", env_file=".env", env_file_encoding="utf-8", case_sensitive=True
     )

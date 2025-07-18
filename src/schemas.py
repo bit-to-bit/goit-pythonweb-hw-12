@@ -2,7 +2,7 @@ from datetime import date
 from typing import Optional
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from pydantic_extra_types.phone_numbers import PhoneNumber
-import re
+from src.database.models import UserRole
 
 PhoneNumber.phone_format = "E164"
 
@@ -26,7 +26,7 @@ class User(BaseModel):
     username: str
     email: str
     avatar: str
-
+    role: UserRole
     model_config = ConfigDict(from_attributes=True)
 
 
@@ -43,3 +43,7 @@ class Token(BaseModel):
 
 class RequestEmail(BaseModel):
     email: EmailStr
+
+
+class RequestPassword(BaseModel):
+    password: str

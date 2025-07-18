@@ -8,6 +8,8 @@ from jose import JWTError, jwt
 from src.conf.config import settings
 from src.database.db import get_db
 from src.services.users import UserService
+from src.database.redis import redis_cache
+from src.schemas import User, UserRole
 
 
 class Hash:
@@ -56,11 +58,20 @@ async def get_current_user(
             raise credentials_exception
     except JWTError as e:
         raise credentials_exception
-    user_service = UserService(db)
-    user = await user_service.get_user_by_username(username)
+    print("USER_NAME === ", username)
+    user = redis_cache.get(username)
+    print("User Type = ", type(user))
+    if user is None:
+        print("1---1")
+        user_service = UserService(db)
+        user = await user_service.get_user_by_username(username)
+        redis_cache.set(username, User.model_validate(user).model_dump_json())
+        redis_cache.expire(username, 3600)
+        return user
     if user is None:
         raise credentials_exception
-    return user
+    print("USER = !!! = ", user)
+    return User.model_validate_json(user)
 
 
 def create_email_token(data: dict):
@@ -83,3 +94,9 @@ async def get_email_from_token(token: str):
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail="Неправильний токен для перевірки електронної пошти",
         )
+
+
+def get_current_admin_user(current_user: User = Depends(get_current_user)):
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Недостатньо прав доступу")
+    return current_user
