@@ -18,6 +18,18 @@ limiter = Limiter(key_func=get_remote_address)
 )
 @limiter.limit("10/minute")
 async def me(request: Request, user: User = Depends(get_current_user)):
+    """
+    Retrieve the currently authenticated user's profile.
+
+    This endpoint is rate-limited to 10 requests per minute.
+
+    Args:
+        request (Request): The current HTTP request (used for rate limiting).
+        user (User): The currently authenticated user.
+
+    Returns:
+        User: The authenticated user's data.
+    """
     return user
 
 
@@ -27,6 +39,19 @@ async def update_avatar_user(
     user: User = Depends(get_current_admin_user),
     db: AsyncSession = Depends(get_db),
 ):
+    """
+    Update the avatar for the currently authenticated admin user.
+
+    Uploads a new avatar image to a cloud service and updates the user's profile.
+
+    Args:
+        file (UploadFile): The avatar image file to upload.
+        user (User): The currently authenticated admin user.
+        db (AsyncSession): The database session dependency.
+
+    Returns:
+        User: The updated user object with the new avatar URL.
+    """
     avatar_url = UploadFileService(
         settings.CLD_NAME, settings.CLD_API_KEY, settings.CLD_API_SECRET
     ).upload_file(file, user.username)

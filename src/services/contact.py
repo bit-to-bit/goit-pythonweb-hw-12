@@ -9,7 +9,7 @@ from sqlalchemy.exc import IntegrityError
 def _handle_integrity_error(e: IntegrityError):
     raise HTTPException(
         status_code=status.HTTP_400_BAD_REQUEST,
-        detail="Помилка цілісності даних.",
+        detail="Помилка цілісності даних:",
     )
 
 

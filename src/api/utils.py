@@ -9,8 +9,22 @@ router = APIRouter(tags=["utils"])
 
 @router.get("/healthchecker")
 async def healthchecker(db: AsyncSession = Depends(get_db)):
+    """
+    Check the health status of the application and database connection.
+
+    Executes a simple SQL query to verify that the database is accessible.
+
+    Args:
+        db (AsyncSession): The database session dependency.
+
+    Returns:
+        dict: A message indicating the application is running.
+
+    Raises:
+        HTTPException:
+            - 500: If the database is not configured correctly or the query fails.
+    """
     try:
-        # Виконуємо асинхронний запит
         result = await db.execute(text("SELECT 1"))
         result = result.scalar_one_or_none()
 

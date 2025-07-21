@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Optional
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from pydantic_extra_types.phone_numbers import PhoneNumber
@@ -34,6 +34,18 @@ class UserCreate(BaseModel):
     username: str
     email: str
     password: str
+
+
+class UserFull(BaseModel):
+    id: int
+    username: str
+    email: str
+    hashed_password: str
+    confirmed: bool
+    avatar: str
+    created_at: datetime
+    role: UserRole
+    model_config = ConfigDict(from_attributes=True)
 
 
 class Token(BaseModel):

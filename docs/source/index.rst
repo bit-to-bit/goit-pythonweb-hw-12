@@ -3,15 +3,59 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Contacts Note documentation
-===========================
-
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
-
+Contacts Note Rest API documentation
+===========================================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+
+REST API auth
+======================================================================================
+.. automodule:: src.api.auth
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+REST API contact
+===========================================
+.. automodule:: src.api.contact
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+REST API user
+===========================================
+.. automodule:: src.api.users
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+REST API utils
+===========================================
+.. automodule:: src.api.utils
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+REST API repository Contacts
+===========================================
+.. automodule:: src.repository.contacts
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+REST API repository Users
+===========================================
+.. automodule:: src.repository.users
+  :members:
+  :undoc-members:
+  :show-inheritance:
+
+Indices and tables
+===========================================
+
+* :ref:`genindex`
+* :ref:`modindex`
+* :ref:`search`
 

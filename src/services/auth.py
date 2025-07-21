@@ -9,7 +9,8 @@ from src.conf.config import settings
 from src.database.db import get_db
 from src.services.users import UserService
 from src.database.redis import redis_cache
-from src.schemas import User, UserRole
+from src.database.models import User, UserRole
+from src.schemas import User as UserFull
 
 
 class Hash:
@@ -58,20 +59,20 @@ async def get_current_user(
             raise credentials_exception
     except JWTError as e:
         raise credentials_exception
-    print("USER_NAME === ", username)
-    user = redis_cache.get(username)
-    print("User Type = ", type(user))
+    user = None
+    redis_user = redis_cache.get(username)
+    if redis_user:
+        pydantic_user = UserFull.model_validate_json(redis_user)
+        user = User(**pydantic_user.model_dump())
     if user is None:
-        print("1---1")
         user_service = UserService(db)
         user = await user_service.get_user_by_username(username)
-        redis_cache.set(username, User.model_validate(user).model_dump_json())
+        redis_cache.set(username, UserFull.model_validate(user).model_dump_json())
         redis_cache.expire(username, 3600)
         return user
     if user is None:
         raise credentials_exception
-    print("USER = !!! = ", user)
-    return User.model_validate_json(user)
+    return user
 
 
 def create_email_token(data: dict):

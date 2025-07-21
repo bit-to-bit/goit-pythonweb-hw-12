@@ -1,5 +1,4 @@
 import asyncio
-import json
 import pytest
 import pytest_asyncio
 from fastapi.testclient import TestClient
@@ -26,16 +25,7 @@ TestingSessionLocal = async_sessionmaker(
 test_user = {
     "username": "test user",
     "email": "test1@mail.com",
-    "avatar": "",
-    "password": "123",
-    "role": "user",
-}
-
-redis_test_user = {
-    "id": "1",
-    "username": "test user",
-    "email": "test1@mail.com",
-    "avatar": "",
+    "avatar": "<https://twitter.com/gravatar>",
     "password": "123",
     "role": "admin",
 }
@@ -55,6 +45,7 @@ def init_models_wrap():
                 hashed_password=hash_password,
                 confirmed=True,
                 avatar="<https://twitter.com/gravatar>",
+                role=test_user["role"],
             )
             session.add(current_user)
             await session.commit()
@@ -73,7 +64,6 @@ def client():
                 raise
 
     app.dependency_overrides[get_db] = override_get_db
-
     yield TestClient(app)
 
 
@@ -83,33 +73,10 @@ async def get_token():
     return token
 
 
-# @pytest.fixture(scope="module", autouse=True)
-# def mock_redis():
-#     with patch("src.database.redis.redis_cache") as mocked_redis:
-#         mocked_redis.get.return_value = json.dumps(redis_test_user).encode("utf-8")
-#         yield mocked_redis
-
-
 @pytest.fixture(scope="module")
 def mock_redis():
-    user = User(
-        id=1,
-        username=redis_test_user["username"],
-        email=redis_test_user["email"],
-        hashed_password=Hash().get_password_hash(redis_test_user["password"]),
-        confirmed=True,
-        avatar=redis_test_user["avatar"],
-        role="admin",
-    )
     with patch("src.services.auth.redis_cache") as mocked_redis:
-        user_dict = {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "avatar": user.avatar,
-            "role": user.role,
-        }
-        mocked_redis.get.return_value = json.dumps(user_dict).encode("utf-8")
+        mocked_redis.get.return_value = None
         mocked_redis.set.return_value = True
         mocked_redis.expire.return_value = True
         yield mocked_redis
